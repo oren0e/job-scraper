@@ -20,19 +20,20 @@ pd.set_option('expand_frame_repr', False)  # To view all the variables in the co
 
 class Notifier:
     def __init__(self, query: str, terms: Optional[str],
-                 email: Optional[str], num_recent_jobs: Optional[int] = 15,
-                 sort_by: Optional[str] = 'date') -> None:
+                 email: Optional[str] = None, num_recent_jobs: Optional[int] = 15,
+                 sort_by: Optional[str] = 'date', all_terms: bool = False) -> None:
         self._query = query
         self._terms = terms     # search terms separated by ','
         self._email = email
         self._num_recent_jobs = num_recent_jobs
         self._urls: List = []
         self._sort_by = sort_by
+        self._all_terms = all_terms
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}('
                 f'{self._query!r}, {self._terms!r}, {self._email!r}, {self._num_recent_jobs!r},'
-                f'{self._sort_by!r})'
+                f'{self._sort_by!r}, {self._all_terms!r})'
                 )
 
     @staticmethod
@@ -145,8 +146,7 @@ class Notifier:
 
         return ' '.join([word for word in no_punc.split(' ') if word not in stopwords.words('english')])  # no stopwords
 
-    @staticmethod
-    def _search_terms(terms: str, text: str, all_terms: bool = False) -> bool:
+    def _search_terms(self, terms: str, text: str) -> bool:
         """
         Returns boolean answer if the searched terms are found in the text or not.
         If 'all_terms' = True, the function will return True only if all the terms were
@@ -158,7 +158,7 @@ class Notifier:
         terms_lst = [item.strip() for item in terms_lst]
         found_set = set(re.findall(r'\b' + '|'.join(terms_lst) + r'\b', text))
 
-        if all_terms:
+        if self._all_terms:
             res_lst = []
             for item in terms_lst:
                 if item in found_set:
@@ -177,6 +177,7 @@ class Notifier:
 
         df['contains_terms'] = df['text'].apply(lambda x: self._search_terms(terms=self._terms, text=x))
         filtered_df = df.loc[df['contains_terms'] == True].reset_index(drop=True)
+        filtered_df.drop('contains_terms', axis=1, inplace=True)
 
         hide_index = [''] * len(filtered_df)
         filtered_df.index = hide_index

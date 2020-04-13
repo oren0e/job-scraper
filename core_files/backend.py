@@ -19,7 +19,7 @@ pd.set_option('expand_frame_repr', False)  # To view all the variables in the co
 
 
 class Notifier:
-    def __init__(self, query: str, terms: Optional[str],
+    def __init__(self, query: str, terms: Optional[str] = None,
                  email: Optional[str] = None, num_recent_jobs: Optional[int] = 15,
                  sort_by: Optional[str] = 'date', all_terms: bool = False) -> None:
         self._query = query
@@ -173,11 +173,17 @@ class Notifier:
         """ Builds the table of jobs according to search terms criteria """
 
         df = self._get_dataframe()
-        df['text'] = df['text'].apply(self._text_process)
 
-        df['contains_terms'] = df['text'].apply(lambda x: self._search_terms(terms=self._terms, text=x))
-        filtered_df = df.loc[df['contains_terms'] == True].reset_index(drop=True)
-        filtered_df.drop('contains_terms', axis=1, inplace=True)
+        if self._terms is not None:
+            df['text_processed'] = df['text'].apply(self._text_process)
+            df['contains_terms'] = df['text_processed'].apply(lambda x: self._search_terms(terms=self._terms, text=x))
+            filtered_df = df.loc[df['contains_terms'] == True].reset_index(drop=True)
+            filtered_df.drop(['contains_terms', 'text_processed'], axis=1, inplace=True)
+        else:
+            filtered_df = df
+            filtered_df.reset_index(drop=True)
+
+        del df
 
         hide_index = [''] * len(filtered_df)
         filtered_df.index = hide_index

@@ -15,6 +15,9 @@ import pandas as pd
 from core_files import stopwrds_initializer
 from nltk.corpus import stopwords
 
+from utils.logger import logger
+from config import common
+
 pd.set_option('expand_frame_repr', False)  # To view all the variables in the console
 
 
@@ -29,6 +32,8 @@ class Notifier:
         self._urls: List = []
         self._sort_by = sort_by
         self._all_terms = all_terms
+        logger.info(f'Initiated with parameters: query={self._query}:terms={self._terms}:email={self._email}:'
+                    f'num_recent_jobs={self._num_recent_jobs}:sort_by={self._sort_by}:all_terms={self._all_terms}')
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}('
@@ -118,6 +123,7 @@ class Notifier:
         for i in tqdm.tqdm(range(0, num_jobs, 10), desc='Getting links:', ascii=True):
             soup = self._get_job_soup(base_url+f'{str(i)}')
             self._urls.extend(self._get_jobs_links(soup))
+        logger.info(f'Got all the links for the jobs searched')
 
     def _get_dataframe(self) -> pd.DataFrame:
         """ Builds the Pandas DataFrame from the urls list """
@@ -130,7 +136,9 @@ class Notifier:
                 jobs_dict[i] = {}
                 jobs_dict[i]['title'], jobs_dict[i]['company'], jobs_dict[i]['text'] = self._get_job_details(url)
             except:
+                logger.error(f'Failed to grab content for the {i}th url')
                 continue
+        logger.info(f'Finished getting content for the links acquired')
 
         df = pd.DataFrame.from_dict(jobs_dict, orient='index')
         df['link'] = self._urls
@@ -173,6 +181,7 @@ class Notifier:
         """ Builds the table of jobs according to search terms criteria """
 
         df = self._get_dataframe()
+        logger.info('Got the dataframe')
 
         if self._terms is not None:
             df['text_processed'] = df['text'].apply(self._text_process)

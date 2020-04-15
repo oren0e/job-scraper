@@ -1,8 +1,8 @@
 import os
 import datetime
 
-ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../..')
-LOG_DIR = os.path.join(ROOT_DIR, 'logging/jobs_notifier_logs')
+ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
 os.makedirs(LOG_DIR, exist_ok=True)
 
 CURRENT_TIMESTAMP = datetime.datetime.now().isoformat()

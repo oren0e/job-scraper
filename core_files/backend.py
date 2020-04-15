@@ -23,21 +23,20 @@ from config import common
 
 class Notifier:
     def __init__(self, query: str, terms: Optional[str] = None,
-                 email: Optional[str] = None, num_recent_jobs: Optional[int] = 15,
+                 num_recent_jobs: Optional[int] = 15,
                  sort_by: Optional[str] = 'date', all_terms: bool = False) -> None:
         self._query = query
         self._terms = terms     # search terms separated by ','
-        self._email = email
         self._num_recent_jobs = num_recent_jobs
         self._urls: List = []
         self._sort_by = sort_by
         self._all_terms = all_terms
-        logger.info(f'Initiated with parameters: query={self._query}:terms={self._terms}:email={self._email}:'
+        logger.info(f'Initiated with parameters: query={self._query}:terms={self._terms}:'
                     f'num_recent_jobs={self._num_recent_jobs}:sort_by={self._sort_by}:all_terms={self._all_terms}')
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}('
-                f'{self._query!r}, {self._terms!r}, {self._email!r}, {self._num_recent_jobs!r},'
+                f'{self._query!r}, {self._terms!r}, {self._num_recent_jobs!r},'
                 f'{self._sort_by!r}, {self._all_terms!r})'
                 )
 

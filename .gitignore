@@ -135,3 +135,7 @@ dmypy.json
 
 # Test files
 test.py
+
+# logs
+logs
+logs/**

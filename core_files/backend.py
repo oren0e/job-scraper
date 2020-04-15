@@ -16,9 +16,9 @@ from core_files import stopwrds_initializer
 from nltk.corpus import stopwords
 
 from utils.logger import logger
-from config import common
+from utils import pandas_utils
 
-pd.set_option('expand_frame_repr', False)  # To view all the variables in the console
+from config import common
 
 
 class Notifier:

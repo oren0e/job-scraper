@@ -132,10 +132,18 @@ dmypy.json
 .idea
 **.idea
 **/.idea
+.DS_Store
+*.DS_Store
+**.DS_Store
 
 # Test files
-test.py
+test**.py
+test*.py
 
 # logs
 logs
 logs/**
+
+# HTML
+.html
+*.html

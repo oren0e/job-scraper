@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import re
 import string
 
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Union
 
 import tqdm
 
@@ -25,13 +25,13 @@ class Notifier:
     def __init__(self, query: str, terms: Optional[str] = None,
                  num_recent_jobs: Optional[int] = 15,
                  sort_by: Optional[str] = 'date', all_terms: bool = False) -> None:
-        self._query = query
+        self._query = query.replace(' ', '+')   # spaces are replaced by '+' in url
         self._terms = terms     # search terms separated by ','
         self._num_recent_jobs = num_recent_jobs
         self._urls: List = []
         self._sort_by = sort_by
         self._all_terms = all_terms
-        logger.info(f'Initiated with parameters: query={self._query}:terms={self._terms}:'
+        logger.info(f'----------- Initiated with parameters: query={self._query}:terms={self._terms}:'
                     f'num_recent_jobs={self._num_recent_jobs}:sort_by={self._sort_by}:all_terms={self._all_terms}')
 
     def __repr__(self) -> str:
@@ -88,7 +88,7 @@ class Notifier:
         """ Extract links from the main search page """
 
         urls = []
-        for link in soup.find_all(name='div', class_='title'):
+        for link in soup.find_all(name='h2', class_='title'):
             var_url = link.find('a')['href']
             url = 'https://il.indeed.com' + var_url
             urls.append(url)
@@ -110,7 +110,7 @@ class Notifier:
 
         if self._sort_by == 'relevance':
             base_url = f'https://il.indeed.com/jobs?q={self._query}&l=israel&start='
-        else:
+        else:   # by date
             base_url = f'https://il.indeed.com/jobs?q={self._query}&l=israel&sort=date&start='
 
         if self._num_recent_jobs is not None:
@@ -122,12 +122,19 @@ class Notifier:
         for i in tqdm.tqdm(range(0, num_jobs, 10), desc='Getting links:', ascii=True):
             soup = self._get_job_soup(base_url+f'{str(i)}')
             self._urls.extend(self._get_jobs_links(soup))
-        logger.info(f'Got all the links for the jobs searched')
 
-    def _get_dataframe(self) -> pd.DataFrame:
+        if i == (num_jobs - 10):  # finished getting all the links
+            logger.info(f'Got all the links for the jobs searched')
+        else:
+            logger.warning(f'Got {len(self._urls)} links for the jobs searched')
+
+    def _get_dataframe(self) -> Union[pd.DataFrame, None]:
         """ Builds the Pandas DataFrame from the urls list """
 
         self._build_urls()
+        if len(self._urls) == 0:
+            return None
+
         jobs_dict: Dict[int, Dict[str, str]] = {}
 
         for i, url in enumerate(tqdm.tqdm(self._urls, desc='Getting content', ascii=True)):
@@ -176,10 +183,13 @@ class Notifier:
         else:
             return found_set != set()
 
-    def build_jobs_table(self) -> pd.DataFrame:
+    def build_jobs_table(self) -> Union[None, pd.DataFrame]:
         """ Builds the table of jobs according to search terms criteria """
 
         df = self._get_dataframe()
+        if df is None:
+            logger.warning('dataframe is None')
+            return None
         logger.info('Got the dataframe')
 
         if self._terms is not None:

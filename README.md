@@ -3,7 +3,7 @@ A command-line interface to scrape jobs from Indeed.com with search terms. It is
 **Note:** the tags in Indeed website can change and if it does you will see that no results are being found and the Dataframe
 that comes back is `None`.
 
-Currently this version works with Unix-based systems only (tested on MacOS with python 3.7) 
+Currently this version works with Unix-based systems only (tested on MacOS with python 3.7 and Google Chrome) 
 
 # Installation
 1. This package uses `Selenium` which can emulate browser usage within python, with 

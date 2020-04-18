@@ -6,8 +6,9 @@ that comes back is `None`.
 Currently this version works with Unix-based systems only (tested on MacOS with python 3.7) 
 
 # Installation
-1. This package uses `Selenium` which can emulate browser usage within python. You need to install a correct driver for 
-your browser in addition to the `selenium` package. Please refer to https://pypi.org/project/selenium/ for further details.
+1. This package uses `Selenium` which can emulate browser usage within python, with 
+Google Chrome browser. You need to install Chrome and the correct driver to use with Selenium in addition to the `selenium` package.
+Please refer to https://pypi.org/project/selenium/ for further details.
 2. Clone the repo to your local machine.
 3. Give execution permissions to `jobs.py` like so: `$ chmod +x jobs.py`
 

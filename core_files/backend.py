@@ -136,18 +136,20 @@ class Notifier:
             return None
 
         jobs_dict: Dict[int, Dict[str, str]] = {}
+        successful_urls: List = []
 
         for i, url in enumerate(tqdm.tqdm(self._urls, desc='Getting content', ascii=True)):
             try:
                 jobs_dict[i] = {}
                 jobs_dict[i]['title'], jobs_dict[i]['company'], jobs_dict[i]['text'] = self._get_job_details(url)
+                successful_urls.append(url)
             except:
-                logger.error(f'Failed to grab content for the {i}th url')
+                logger.error(f'Failed to grab content for the {i}th url.')
                 continue
-        logger.info(f'Finished getting content for the links acquired')
+        logger.info(f'Finished getting content for {len(successful_urls)} links')
 
         df = pd.DataFrame.from_dict(jobs_dict, orient='index')
-        df['link'] = self._urls
+        df['link'] = successful_urls
 
         return df
 

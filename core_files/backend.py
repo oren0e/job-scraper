@@ -65,8 +65,9 @@ class Notifier:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
+        chrome_path = r'/usr/local/bin/chromedriver'
 
-        browser = webdriver.Chrome(options=options)
+        browser = webdriver.Chrome(options=options, executable_path=chrome_path)
         browser.get(url)
         page = browser.page_source
         soup = BeautifulSoup(page, "html5lib")

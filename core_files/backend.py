@@ -145,8 +145,8 @@ class Notifier:
                 jobs_dict[i] = {}
                 jobs_dict[i]['title'], jobs_dict[i]['company'], jobs_dict[i]['text'] = self._get_job_details(url)
                 successful_urls.append(url)
-            except:
-                logger.error(f'Failed to grab content for the {i}th url.')
+            except Exception as e:
+                logger.error(f'Failed to grab content for the {i}th url. Error caught: {e}')
                 continue
         logger.info(f'Finished getting content for {len(successful_urls)} links')
 

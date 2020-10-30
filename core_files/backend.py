@@ -101,8 +101,8 @@ class Notifier:
         """ Extract the details from each job link """
 
         soup = self._get_job_soup(url)
-        title = self._remove_non_ascii(soup.find(name='h3').get_text())  # job title
-        company = soup.find(name='div', class_='icl-u-xs-mr--xs').get_text()
+        title = self._remove_non_ascii(soup.find(name='h1', class_='icl-u-xs-mb--xs icl-u-xs-mt--none jobsearch-JobInfoHeader-title').get_text())  # job title
+        company = soup.find(name='div', class_='icl-u-lg-mr--sm icl-u-xs-mr--xs').get_text()
         text = self._remove_non_ascii(soup.find(name='div', class_='jobsearch-jobDescriptionText').get_text().strip())
 
         return title, company, text

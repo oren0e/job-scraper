@@ -23,20 +23,25 @@ if __name__ == '__main__':
     parser.set_defaults(sortby_relevance=False)
     args = parser.parse_args()
 
-    if args.sortby_relevance:
-        myjob = Notifier(query=args.query, terms=args.terms, num_recent_jobs=args.num_jobs,
-                         sort_by='relevance', all_terms=args.all_terms)
-    else:
-        myjob = Notifier(query=args.query, terms=args.terms, num_recent_jobs=args.num_jobs,
-                         all_terms=args.all_terms)
+    # num jobs has to be greater than or equal to 15
+    if args.num_jobs < 15:
+        print('num_jobs has to be greater or equal to 15, try again')
 
-    df = myjob.build_jobs_table()
-
-    if df is None:
-        logger.info("No results were found")
-        print("No matching results were found!")
     else:
-        with open(ROOT_DIR + f'/jobs_{CURRENT_DATE}.html', 'w') as file:
-            file.write(df.to_html(justify='center', render_links=True, index=False))
-        logger.info(f"HTML file saved successfully to {ROOT_DIR}")
-        print(f'HTML file written successfully to {ROOT_DIR}')
+        if args.sortby_relevance:
+            myjob = Notifier(query=args.query, terms=args.terms, num_recent_jobs=args.num_jobs,
+                             sort_by='relevance', all_terms=args.all_terms)
+        else:
+            myjob = Notifier(query=args.query, terms=args.terms, num_recent_jobs=args.num_jobs,
+                             all_terms=args.all_terms)
+
+        df = myjob.build_jobs_table()
+
+        if df is None:
+            logger.info("No results were found")
+            print("No matching results were found!")
+        else:
+            with open(ROOT_DIR + f'/jobs_{CURRENT_DATE}.html', 'w') as file:
+                file.write(df.to_html(justify='center', render_links=True, index=False))
+            logger.info(f"HTML file saved successfully to {ROOT_DIR}")
+            print(f'HTML file written successfully to {ROOT_DIR}')
